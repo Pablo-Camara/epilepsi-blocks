@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Epilepsi Shit by Pablo</title>
+
+        <style>
+            html , body {
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="epilepsi-block" width="320px" height="600px" style="border:1px solid #000000;"></canvas>
+
+
+        <script>
+            var gameId = 'epilepsi-block';
+            var canvas = document.getElementById(gameId);
+            var ctx = canvas.getContext("2d");
+            
+            
+
+            function getUsedColors(){
+                const hexNumbers = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'];
+                var i,usedColors;
+                usedColors = [];
+                for(i = 0; i < hexNumbers.length; i++){
+                    var color = '#';
+                    for(var hSize = 1; hSize <= 6; hSize++){
+                        color += hexNumbers[Math.floor(Math.random() * hexNumbers.length)];
+                    }
+                    usedColors.push(color);
+                }
+                return usedColors;
+            }
+
+            function coloredBrick(x,y,w,h,hexColor){
+                return {
+                    x: x,
+                    y: y,
+                    w: w,
+                    h: h,
+                    hexColor: hexColor
+                };
+            }
+
+
+            function getInitialBricks(){
+                
+                var bricks = [];
+                var borderLeft = 2, borderRight = 2, borderTop = 2, borderBottom = 2;
+                var totalBorder = borderLeft + borderRight;
+
+                var bricksColors = getUsedColors();
+                for(var rows = 0; rows < 40; rows++){ 
+                    var brickWidth = (canvas.clientWidth / bricksColors.length) - totalBorder; 
+                    for(var i = 0; i < canvas.width / brickWidth; i++){
+                        
+                        var brickHeight = canvas.clientHeight / 40;
+                        var brick = coloredBrick(i*brickWidth + borderLeft,borderTop + (rows * brickHeight),brickWidth,brickHeight - borderBottom,bricksColors[Math.floor(Math.random() * bricksColors.length)]);
+                        bricks.push(brick)
+                    }
+                }
+
+                return bricks;
+            }
+           
+            var initialBricks = getInitialBricks();
+
+            function drawBricks(bricks){
+                for(var i = 0; i < bricks.length; i++){
+                    ctx.fillStyle = bricks[i].hexColor;
+                    ctx.fillRect(bricks[i].x, bricks[i].y , bricks[i].w, bricks[i].h);
+                }
+            }
+
+            function gravityPull(bricks){
+                for(let i = 0; i < bricks.length; i++){
+                    bricks[i].y--;
+                    bricks[i].x--;
+                }
+            }
+
+            drawBricks(initialBricks);
+            var isGravityEnabled = false;
+            var gravityPullInterval = setInterval(function(){
+                if(isGravityEnabled)gravityPull(initialBricks);
+
+            },30);
+
+            var gameDrawInterval = setInterval(function(){
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                initialBricks = getInitialBricks();
+                drawBricks(initialBricks);
+                
+            },1);
+
+            canvas.onclick = function(){
+                initialBricks = getInitialBricks();
+            };
+                    
+            
+            
+        </script>
+    </body>
+</html>
